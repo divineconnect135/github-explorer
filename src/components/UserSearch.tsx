@@ -1,63 +1,114 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FaGithub } from "react-icons/fa";
+import { fetchGithubUser, searchGithubUser } from "../api/github";
+import UserCard from "./UserCard";
+import RecentSearches from "./RecentSearches";
+import { useDebounce } from "use-debounce";
+import SuggestionsDropdown from "./SuggestionDropdown";
 
 const UserSearch = () => {
   const [username, setUsername] = useState("");
   const [submittedUsername, setSubmittedUsername] = useState("");
-
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["users", submittedUsername],
-    queryFn: async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_GITHUB_API_URL}/users/${submittedUsername}`,
-      );
-
-      if (!res.ok) throw new Error("User Not Found");
-
-      const data = await res.json();
-      console.log(data);
-      return data;
-    },
-    enabled: !!submittedUsername,
+  const [recentUsers, setRecentUsers] = useState<string[]>(() => {
+    const stored = localStorage.getItem("recentUsers");
+    return stored ? JSON.parse(stored) : [];
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [debouncedUsername] = useDebounce(username, 300);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  //Query to fetch specific user
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["users", submittedUsername],
+    queryFn: () => fetchGithubUser(submittedUsername),
+
+    enabled: !!submittedUsername,
+  });
+  //Query to fetch specific user suggestion
+  const { data: suggestions, refetch } = useQuery({
+    queryKey: ["github-user-suggestions", debouncedUsername],
+    queryFn: () => searchGithubUser(debouncedUsername),
+
+    enabled: debouncedUsername.length > 1,
+  });
+
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setSubmittedUsername(username.trim());
+    const trimmed = username.trim();
+
+    if (!trimmed) return;
+
+    setSubmittedUsername(trimmed);
+
+    setRecentUsers((prev) => {
+      const updated = [trimmed, ...prev.filter((u) => u !== trimmed)];
+      return updated.slice(0, 5);
+    });
+
+    setUsername("");
   };
+
+  useEffect(() => {
+    localStorage.setItem("recentUsers", JSON.stringify(recentUsers));
+  }, [recentUsers]);
 
   return (
     <>
       <form onSubmit={handleSubmit} className="form">
-        <input
-          type="text"
-          name="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+        <div className="dropdown-wrapper">
+          <input
+            type="text"
+            name="username"
+            value={username}
+            onChange={(e) => {
+              const val = e.target.value;
+              setUsername(val);
+              setShowSuggestions(val.trim().length > 1);
+            }}
+          />
+
+          {showSuggestions && suggestions?.length > 0 && (
+            <SuggestionsDropdown
+              suggestions={suggestions}
+              show={showSuggestions}
+              onSelect={(selected) => {
+                setUsername(selected);
+                setShowSuggestions(false);
+
+                if (submittedUsername !== selected) {
+                  setSubmittedUsername(selected);
+                } else {
+                  refetch();
+                }
+
+                setRecentUsers((prev) => {
+                  const updated = [
+                    selected,
+                    ...prev.filter((u) => u !== selected),
+                  ];
+                  return updated.slice(0, 5);
+                });
+              }}
+            />
+          )}
+        </div>
         <button type="submit">Search</button>
       </form>
 
       {isLoading && <p className="status"> Loading....</p>}
       {isError && <p className="status error"> {error.message}</p>}
 
-      {data && (
-        <div className="user-card">
-          <img src={data.avatar_url} alt={data.name} className="avatar" />
-          <h2>{data.name || data.login}</h2>
-          <p className="bio">{data.bio}</p>
-          <a
-            href={data.html_url}
-            className="profile-btn"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaGithub />
-            View Github Profile
-          </a>
-        </div>
+      {data && <UserCard user={data} />}
+
+      {recentUsers.length > 0 && (
+        <RecentSearches
+          users={recentUsers}
+          onSelect={(username) => {
+            setUsername(username);
+            setSubmittedUsername(username);
+          }}
+        />
       )}
     </>
   );
