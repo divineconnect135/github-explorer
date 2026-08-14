@@ -7,8 +7,8 @@
 
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: #979797;
-  color: #333;
+  background: #d0cfcf;
+  color: #1b1a1a;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -29,7 +29,7 @@ body {
 h1 {
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
-  color: #222;
+  color: #111111;
 }
 
 /* Form */
