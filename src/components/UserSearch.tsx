@@ -96,7 +96,7 @@ const UserSearch = () => {
         <button type="submit">Search</button>
       </form>
 
-      {isLoading && <p className="status"> Loading....</p>}
+      {isLoading && <p className="status"> Loading...</p>}
       {isError && <p className="status error"> {error.message}</p>}
 
       {data && <UserCard user={data} />}

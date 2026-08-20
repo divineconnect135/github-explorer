@@ -14,7 +14,7 @@ const UserCard = ({ user }: { user: GithubUser }) => {
         rel="noopener noreferrer"
       >
         <FaGithub />
-        View Github Profile
+        Github Profile
       </a>
     </div>
   );
