@@ -6,7 +6,7 @@
 }
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Geneva, Verdana, sans-serif;
   background: #d0cfcf;
   color: #1b1a1a;
   min-height: 100vh;
@@ -22,7 +22,7 @@ body {
   background: #fff;
   padding: 2.5rem 2rem;
   border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   text-align: center;
 }
 
