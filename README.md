@@ -1,95 +1,60 @@
 # GitHub Explorer
 
-A GitHub user search application built with **React, TypeScript, Vite, and TanStack Query**. Search GitHub users, view profile information, get live suggestions, and access recent searches.
+A responsive GitHub user search application built with React, TypeScript, Vite, and TanStack Query.
+
+GitHub Explorer allows users to search for GitHub accounts, view profile information, get live search suggestions, and access recent searches.
+
+## Live Demo
+
+[View Live Demo](https://github-explorer-seven-bice.vercel.app/)
 
 ## Features
 
-* Search GitHub users by username
-* Live user suggestions
-* Debounced search requests
-* GitHub profile details
-* Recent search history with `localStorage`
-* Loading and error handling
-* TanStack Query caching
-* Query prefetching and refetching
-* TanStack Query Devtools
-* TypeScript type safety
+- Search GitHub users by username
+- Live search suggestions
+- Debounced search input
+- View GitHub profile information
+- Recent search history
+- Persistent recent searches using localStorage
+- Loading states
+- Error handling
+- API response caching
+- Query prefetching
+- Automatic refetching
+- Type-safe API handling with TypeScript
+- Responsive design
 
 ## Tech Stack
 
-* React
-* TypeScript
-* Vite
-* TanStack Query
-* TanStack Query Devtools
-* GitHub REST API
-* use-debounce
-* CSS
+- React
+- TypeScript
+- Vite
+- TanStack Query
+- TanStack Query Devtools
+- GitHub REST API
+- use-debounce
+- localStorage
+- CSS
 
-## Project Structure
+## Technical Implementation
 
-```text
-src/
-├── api/
-│   └── github.ts
-├── components/
-│   ├── RecentSearches.tsx
-│   ├── SuggestionDropdown.tsx
-│   ├── UserCard.tsx
-│   └── UserSearch.tsx
-├── App.tsx
-├── index.css
-├── main.tsx
-└── types.ts
-```
+### GitHub REST API
 
-## TanStack Query
+The application uses the GitHub REST API to search for users and retrieve GitHub profile information.
 
-TanStack Query handles server-state management, including:
+### Server State Management
 
-* Fetching GitHub data
-* Caching responses
-* Loading and error states
-* Refetching
-* Prefetching
-* Query invalidation and lifecycle management
+TanStack Query is used to manage API-related server state, including:
 
-Queries are identified using query keys such as:
+- Data fetching
+- Response caching
+- Loading states
+- Error states
+- Refetching
+- Prefetching
+- Query lifecycle management
 
-```tsx
+Each GitHub user is cached using a unique query key.
+
+```ts
 queryKey: ["users", username]
-```
-
-This allows GitHub users to be cached independently.
-
-## Run Locally
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-## Environment Variables
-
-Create a `.env` file if required:
-
-```env
-VITE_GITHUB_TOKEN=your_github_token
-```
-
-Do not commit your `.env` file or expose sensitive credentials in a public repository.
-
-## GitHub API
-
-This project uses the GitHub REST API for user profiles and user search.
-
-## Purpose
-
-This project demonstrates practical usage of **React + TypeScript** with **TanStack Query** for efficient server-state management, caching, debouncing, prefetching, and refetching.
